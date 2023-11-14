@@ -40,7 +40,7 @@ Python のスクリプトは python 以下に、Rust のスクリプトは rust 
   必要なライブラリは pyaudio。
 
   ```sh
-  pip install pyaudio
+  pip install pyaudio python-dotenv
   ```
 
 - Rust

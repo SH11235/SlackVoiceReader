@@ -1,18 +1,22 @@
+import os
 import io
 import time
 import wave
 import pyaudio
 import requests
+from dotenv import load_dotenv
+
+# .env ファイルの読み込み
+load_dotenv()
 
 # Slack APIの設定
-slack_token = "xoxb-1111111111111-22222222222-333333333333333333333333"
-# https://hogefoo.slack.com/archives/ChannelId/ptimestamp
-channel_id = "ChannelId"
-thread_ts = "1111111111.123456"  # 実行前にスレッドのタイムスタンプを確認しておく
-latest_timestamp = "1111111111.123456"  # 初期値はthread_tsと同じ
+slack_token = os.getenv("SLACK_TOKEN")
+channel_id = os.getenv("CHANNEL_ID")
+thread_ts = os.getenv("THREAD_TS")  # 実行前にスレッドのタイムスタンプを確認しておく
+latest_timestamp = os.getenv("THREAD_TS")  # 初期値はthread_tsと同じ
 
 # VoiceVox APIのエンドポイント設定
-voicevox_url = "http://localhost:50021"
+voicevox_url = os.getenv("VOICEVOX_URL")
 synthesize_endpoint = f"{voicevox_url}/audio_query"
 audio_endpoint = f"{voicevox_url}/synthesis"
 
@@ -38,11 +42,10 @@ while True:
     response = requests.get("https://slack.com/api/conversations.replies",
                             headers=headers,
                             params={"channel": channel_id, "ts": thread_ts})
-    print("response.json():")
-    print(response.json())
+    # for debug
     # response.json() をファイルにはきだす
-    with open('response.json', 'w') as f:
-        f.write(str(response.json()))
+    # with open('response.json', "w", encoding="utf-8") as f:
+    #     f.write(str(response.json()))
     messages = response.json()["messages"]
     # 新しいメッセージがあるかチェック
     if messages and messages[-1]["ts"] != latest_timestamp:
