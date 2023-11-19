@@ -113,8 +113,12 @@ async fn process_message_and_play_sound(
     audio_endpoint: &str,
 ) -> Result<(), anyhow::Error> {
     println!("Synthesizing: {}", text);
+    let start_time = std::time::Instant::now();
     let audio_data =
         get_audio_data_from_voicevox(text, synthesize_endpoint, audio_endpoint).await?;
+    let end_time = start_time.elapsed(); // 時間計測終了
+    println!("VoiceVox API request time: {:?}", end_time);
+
     // デバッグモードでのみ音声データをファイルに保存
     #[cfg(debug_assertions)]
     save_audio_data_to_file(&audio_data, "output.wav").await?;
@@ -142,6 +146,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let device = get_user_device()?;
 
     loop {
+        let start_time = std::time::Instant::now();
+
         // Slack API を使って最新のメッセージを取得
         let client = reqwest::Client::new();
         let res = client
@@ -150,6 +156,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .query(&[("channel", &channel_id), ("ts", &thread_ts)])
             .send()
             .await?;
+
+        let end_time = start_time.elapsed();
+        println!("Slack API request time: {:?}", end_time);
 
         let messages: Value = res.json().await?;
         // meesagesは以下の形式
@@ -187,7 +196,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -201,6 +209,9 @@ mod tests {
             ]
         });
         let result = get_new_message(&messages);
-        assert_eq!(result, Some(("12345".to_string(), "Hello world".to_string())));
+        assert_eq!(
+            result,
+            Some(("12345".to_string(), "Hello world".to_string()))
+        );
     }
 }

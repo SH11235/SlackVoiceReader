@@ -35,6 +35,7 @@ output_device_id = int(input("Enter the output device id: "))
 
 # Slackのスレッドを監視するループ
 while True:
+    start_time = time.time()
     # Slack APIを使って最新のメッセージを取得
     headers = {
         "Authorization": f"Bearer {slack_token}"
@@ -46,6 +47,8 @@ while True:
     # response.json() をファイルにはきだす
     # with open('response.json', "w", encoding="utf-8") as f:
     #     f.write(str(response.json()))
+    end_time = time.time()
+    print("Slack API request time:", end_time - start_time, "seconds")
     messages = response.json()["messages"]
     # 新しいメッセージがあるかチェック
     if messages and messages[-1]["ts"] != latest_timestamp:
@@ -57,22 +60,29 @@ while True:
         print("New message:", text)
         
         # VoiceVox APIを使って音声ファイルを生成
+        start_time = time.time()
         params = {"text": text, "speaker": 1}
         response = requests.post(synthesize_endpoint, params=params)
         audio_query = response.json()
-        print("audio_query:")
-        print(audio_query)
+        # print("audio_query:")
+        # print(audio_query)
         params = {"speaker": 1}
         response = requests.post(audio_endpoint, params=params, json=audio_query)
+        end_time = time.time()
+        print("VoiceVox API request time:", end_time - start_time, "seconds")
         audio_data = response.content
 
         # 音声ファイルを再生
+        start_time = time.time()
         wf = wave.open(io.BytesIO(audio_data), 'rb')
         stream = p.open(format=p.get_format_from_width(wf.getsampwidth()),
                         channels=wf.getnchannels(),
                         rate=wf.getframerate(),
                         output=True,
                         output_device_index=output_device_id)
+        end_time = time.time()
+        print("Audio play setup time:", end_time - start_time, "seconds")
+        start_time = time.time()
         data = wf.readframes(1024)
         while data:
             stream.write(data)
@@ -80,6 +90,8 @@ while True:
         stream.stop_stream()
         stream.close()
         print("Done")
+        end_time = time.time()
+        print("Audio play time:", end_time - start_time, "seconds")
     # 一定時間待機（APIのレートリミットを考慮）
     print("sleeping...")
     time.sleep(1)
