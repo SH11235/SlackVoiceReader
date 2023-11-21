@@ -129,6 +129,7 @@ pub fn get_new_message(messages: &Value) -> Option<(String, String)> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::Read;
     use serde_json::json;
 
     #[test]
@@ -143,5 +144,23 @@ mod tests {
             result,
             Some(("12345".to_string(), "Hello world".to_string()))
         );
+    }
+
+    #[tokio::test]
+    async fn test_save_audio_data_to_file() {
+        let audio_data = [0u8; 10];
+        let file_path = "test_output.wav";
+
+        // Run the function and assert it doesn't return an error
+        assert!(save_audio_data_to_file(&audio_data, file_path).await.is_ok());
+
+        // Check the file was created and has the correct data
+        let mut file = File::open(file_path).unwrap();
+        let mut buffer = Vec::new();
+        file.read_to_end(&mut buffer).unwrap();
+        assert_eq!(buffer, audio_data);
+
+        // Clean up the test file
+        std::fs::remove_file(file_path).unwrap();
     }
 }
