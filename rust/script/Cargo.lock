@@ -1145,6 +1145,7 @@ dependencies = [
  "anyhow",
  "core",
  "dotenv",
+ "log",
  "tokio",
 ]
 
