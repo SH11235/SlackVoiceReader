@@ -45,13 +45,14 @@ async fn save_audio_data_to_file(audio_data: &[u8], file_path: &str) -> Result<(
 
 async fn get_audio_data_from_voicevox(
     text: &str,
+    speaker_style_id: &str,
     synthesize_endpoint: &str,
     audio_endpoint: &str,
 ) -> Result<Vec<u8>, anyhow::Error> {
     let client = reqwest::Client::new();
     let audio_query = client
         .post(synthesize_endpoint)
-        .query(&[("text", text), ("speaker", "1")])
+        .query(&[("text", text), ("speaker", speaker_style_id)])
         .send()
         .await?
         .json::<serde_json::Value>()
@@ -59,7 +60,7 @@ async fn get_audio_data_from_voicevox(
 
     let audio_data = client
         .post(audio_endpoint)
-        .query(&[("speaker", "1")])
+        .query(&[("speaker", speaker_style_id)])
         .json(&audio_query)
         .send()
         .await?
@@ -108,6 +109,7 @@ fn get_output_stream(
 
 async fn process_message_and_play_sound(
     text: &str,
+    speaker_style_id: &str,
     device: &cpal::Device,
     synthesize_endpoint: &str,
     audio_endpoint: &str,
@@ -115,7 +117,7 @@ async fn process_message_and_play_sound(
     println!("Synthesizing: {}", text);
     let start_time = std::time::Instant::now();
     let audio_data =
-        get_audio_data_from_voicevox(text, synthesize_endpoint, audio_endpoint).await?;
+        get_audio_data_from_voicevox(text, speaker_style_id, synthesize_endpoint, audio_endpoint).await?;
     let end_time = start_time.elapsed(); // 時間計測終了
     println!("VoiceVox API request time: {:?}", end_time);
 
@@ -142,6 +144,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let voicevox_url = env::var("VOICEVOX_URL").expect("VOICEVOX_URL is not set in .env file");
     let synthesize_endpoint = format!("{}/audio_query", voicevox_url);
     let audio_endpoint = format!("{}/synthesis", voicevox_url);
+
+    // 読み上げキャラクターの指定
+    let speaker_style_id = env::var("SPEAKER_STYLE_ID")
+        .expect("SPEAKER_STYLE_ID is not set in .env file")
+        .to_string();
 
     let device = get_user_device()?;
 
@@ -178,6 +185,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 // メッセージを処理して音声を再生
                 process_message_and_play_sound(
                     &text,
+                    &speaker_style_id,
                     &device,
                     &synthesize_endpoint,
                     &audio_endpoint,
