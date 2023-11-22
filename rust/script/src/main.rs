@@ -9,6 +9,7 @@ use std::{env, thread, time::Duration};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    env_logger::init();
     dotenv().ok();
     let slack_token = env::var("SLACK_TOKEN").expect("SLACK_TOKEN is not set in .env file");
     let thread_url = env::var("THREAD_URL").expect("THREAD_URL is not set in .env file");
