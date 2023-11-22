@@ -1,7 +1,8 @@
 use core::{
     extract_slack_ids, fetch_slack_messages, get_audio_data_from_voicevox, get_new_message,
-    get_user_device, play_audio_data, save_audio_data_to_file,
+    get_output_stream, get_user_device, play_audio_data, save_audio_data_to_file,
 };
+use cpal::traits::DeviceTrait;
 use dotenv::dotenv;
 use log::{error, info};
 use std::{env, thread, time::Duration};
@@ -17,6 +18,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let synthesize_endpoint = format!("{}/audio_query", voicevox_url);
     let audio_endpoint = format!("{}/synthesis", voicevox_url);
     let device = get_user_device()?;
+    let (_stream, stream_handle) = get_output_stream(&device.name()?)?;
     let speaker_style_id =
         env::var("SPEAKER_STYLE_ID").expect("SPEAKER_STYLE_ID is not set in .env file");
 
@@ -44,7 +46,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 #[cfg(debug_assertions)]
                                 save_audio_data_to_file(&audio_data, "output.wav").await?;
 
-                                play_audio_data(&device, &audio_data).await?;
+                                play_audio_data(&stream_handle, &audio_data).await?;
                             }
                             Err(e) => {
                                 error!("Failed to get audio data: {}", e);

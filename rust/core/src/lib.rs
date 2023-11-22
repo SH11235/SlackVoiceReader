@@ -76,11 +76,10 @@ pub async fn save_audio_data_to_file(
 }
 
 pub async fn play_audio_data(
-    device: &cpal::Device,
+    stream_handle: &OutputStreamHandle,
     audio_data: &[u8],
 ) -> Result<(), anyhow::Error> {
-    let (_stream, stream_handle) = get_output_stream(&device.name()?)?;
-    let sink = Sink::try_new(&stream_handle)?;
+    let sink = Sink::try_new(stream_handle)?;
     let cursor = Cursor::new(audio_data.to_vec());
     let source = Decoder::new(cursor)?;
     sink.append(source);
