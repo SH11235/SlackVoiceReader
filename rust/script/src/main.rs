@@ -1,6 +1,6 @@
 use core::{
-    fetch_slack_messages, get_audio_data_from_voicevox, get_new_message, get_user_device,
-    play_audio_data, save_audio_data_to_file,
+    extract_slack_ids, fetch_slack_messages, get_audio_data_from_voicevox, get_new_message,
+    get_user_device, play_audio_data, save_audio_data_to_file,
 };
 use dotenv::dotenv;
 use log::{error, info};
@@ -10,8 +10,9 @@ use std::{env, thread, time::Duration};
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv().ok();
     let slack_token = env::var("SLACK_TOKEN").expect("SLACK_TOKEN is not set in .env file");
-    let channel_id = env::var("CHANNEL_ID").expect("CHANNEL_ID is not set in .env file");
-    let thread_ts = env::var("THREAD_TS").expect("THREAD_TS is not set in .env file");
+    let thread_url = env::var("THREAD_URL").expect("THREAD_URL is not set in .env file");
+    let (channel_id, thread_ts) =
+        extract_slack_ids(&thread_url).expect("Failed to extract IDs from THREAD_URL");
     let voicevox_url = env::var("VOICEVOX_URL").expect("VOICEVOX_URL is not set in .env file");
     let synthesize_endpoint = format!("{}/audio_query", voicevox_url);
     let audio_endpoint = format!("{}/synthesis", voicevox_url);

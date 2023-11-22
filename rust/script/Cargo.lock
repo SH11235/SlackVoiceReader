@@ -207,6 +207,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "cpal",
+ "lazy_static",
+ "regex",
  "reqwest",
  "rodio",
  "serde_json",

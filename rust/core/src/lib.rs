@@ -1,10 +1,16 @@
-use anyhow::Error;
+use anyhow::{anyhow, Error, Result};
+use lazy_static::lazy_static;
+use regex::Regex;
 use reqwest;
 use rodio::cpal::traits::{DeviceTrait, HostTrait};
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
 use serde_json::Value;
 use std::fs::File;
 use std::io::{self, Cursor, Write};
+
+lazy_static! {
+    static ref SLACK_URL_RE: Regex = Regex::new(r"https://.+\.slack\.com/archives/(C[A-Z0-9]+)/p(\d{10})(\d{6})").unwrap();
+}
 
 pub async fn get_audio_data_from_voicevox(
     text: &str,
@@ -99,6 +105,29 @@ pub fn get_output_stream(
     OutputStream::try_default()
 }
 
+pub fn extract_slack_ids(url: &str) -> Result<(String, String)> {
+    if let Some(caps) = SLACK_URL_RE.captures(url) {
+        let channel_id = caps
+            .get(1)
+            .ok_or_else(|| anyhow!("Failed to extract Channel ID from {}", url))?
+            .as_str()
+            .to_string();
+        let timestamp_part1 = caps
+            .get(2)
+            .ok_or_else(|| anyhow!("Failed to extract timestamp from {}", url))?
+            .as_str();
+        let timestamp_part2 = caps
+            .get(3)
+            .ok_or_else(|| anyhow!("Failed to extract timestamp fraction from {}", url))?
+            .as_str();
+
+        let thread_ts = format!("{}.{}", timestamp_part1, timestamp_part2);
+        Ok((channel_id, thread_ts))
+    } else {
+        Err(anyhow!("Invalid URL format: {}", url))
+    }
+}
+
 pub async fn fetch_slack_messages(
     token: &str,
     channel_id: &str,
@@ -129,8 +158,9 @@ pub fn get_new_message(messages: &Value) -> Option<(String, String)> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::io::Read;
+    use anyhow::Result;
     use serde_json::json;
+    use std::io::Read;
 
     #[test]
     fn test_get_new_message() {
@@ -146,13 +176,32 @@ mod tests {
         );
     }
 
+    #[test]
+    fn test_extract_slack_ids_valid_url() -> Result<()> {
+        let url = "https://workspace.slack.com/archives/C12345678/p1234567890123456";
+        let expected = ("C12345678".to_string(), "1234567890.123456".to_string());
+
+        let result = extract_slack_ids(url)?;
+        assert_eq!(result, expected);
+        Ok(())
+    }
+
+    #[test]
+    fn test_extract_slack_ids_invalid_url() {
+        let url = "https://invalid.url";
+        let result = extract_slack_ids(url);
+        assert!(result.is_err());
+    }
+
     #[tokio::test]
     async fn test_save_audio_data_to_file() {
         let audio_data = [0u8; 10];
         let file_path = "test_output.wav";
 
         // Run the function and assert it doesn't return an error
-        assert!(save_audio_data_to_file(&audio_data, file_path).await.is_ok());
+        assert!(save_audio_data_to_file(&audio_data, file_path)
+            .await
+            .is_ok());
 
         // Check the file was created and has the correct data
         let mut file = File::open(file_path).unwrap();
