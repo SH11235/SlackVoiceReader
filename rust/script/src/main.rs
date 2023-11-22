@@ -1,6 +1,7 @@
+use core::slack::{extract_slack_ids, fetch_slack_messages, get_new_message};
 use core::{
-    extract_slack_ids, fetch_slack_messages, get_audio_data_from_voicevox, get_new_message,
-    get_output_stream, get_user_device, play_audio_data, save_audio_data_to_file,
+    get_audio_data_from_voicevox, get_output_stream, get_user_device, play_audio_data,
+    save_audio_data_to_file,
 };
 use cpal::traits::DeviceTrait;
 use dotenv::dotenv;
@@ -30,31 +31,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     loop {
         match fetch_slack_messages(&client, &slack_token, &channel_id, &thread_ts).await {
             Ok(messages) => {
-                if let Some((ts, text)) = get_new_message(&messages) {
-                    if ts != latest_timestamp {
-                        latest_timestamp = ts;
+                if let Some((ts, text)) = get_new_message(&messages, &latest_timestamp) {
+                    latest_timestamp = ts;
 
-                        info!("New message: {}", text);
+                    info!("New message: {}", text);
 
-                        match get_audio_data_from_voicevox(
-                            &client,
-                            &text,
-                            &speaker_style_id,
-                            &synthesize_endpoint,
-                            &audio_endpoint,
-                        )
-                        .await
-                        {
-                            Ok(audio_data) => {
-                                // デバッグモードでのみ音声データをファイルに保存
-                                #[cfg(debug_assertions)]
-                                save_audio_data_to_file(&audio_data, "output.wav").await?;
+                    match get_audio_data_from_voicevox(
+                        &client,
+                        &text,
+                        &speaker_style_id,
+                        &synthesize_endpoint,
+                        &audio_endpoint,
+                    )
+                    .await
+                    {
+                        Ok(audio_data) => {
+                            // デバッグモードでのみ音声データをファイルに保存
+                            #[cfg(debug_assertions)]
+                            save_audio_data_to_file(&audio_data, "output.wav").await?;
 
-                                play_audio_data(&stream_handle, &audio_data).await?;
-                            }
-                            Err(e) => {
-                                error!("Failed to get audio data: {}", e);
-                            }
+                            play_audio_data(&stream_handle, &audio_data).await?;
+                        }
+                        Err(e) => {
+                            error!("Failed to get audio data: {}", e);
                         }
                     }
                 }

@@ -211,6 +211,8 @@ dependencies = [
  "regex",
  "reqwest",
  "rodio",
+ "serde",
+ "serde_derive",
  "serde_json",
 ]
 
