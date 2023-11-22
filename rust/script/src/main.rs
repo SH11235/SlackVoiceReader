@@ -5,6 +5,7 @@ use core::{
 use cpal::traits::DeviceTrait;
 use dotenv::dotenv;
 use log::{error, info};
+use reqwest;
 use std::{env, thread, time::Duration};
 
 #[tokio::main]
@@ -22,11 +23,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (_stream, stream_handle) = get_output_stream(&device.name()?)?;
     let speaker_style_id =
         env::var("SPEAKER_STYLE_ID").expect("SPEAKER_STYLE_ID is not set in .env file");
+    let client = reqwest::Client::new();
 
     let mut latest_timestamp = thread_ts.clone();
 
     loop {
-        match fetch_slack_messages(&slack_token, &channel_id, &thread_ts).await {
+        match fetch_slack_messages(&client, &slack_token, &channel_id, &thread_ts).await {
             Ok(messages) => {
                 if let Some((ts, text)) = get_new_message(&messages) {
                     if ts != latest_timestamp {
@@ -35,6 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         info!("New message: {}", text);
 
                         match get_audio_data_from_voicevox(
+                            &client,
                             &text,
                             &speaker_style_id,
                             &synthesize_endpoint,

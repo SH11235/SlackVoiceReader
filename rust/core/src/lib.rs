@@ -9,16 +9,17 @@ use std::fs::File;
 use std::io::{self, Cursor, Write};
 
 lazy_static! {
-    static ref SLACK_URL_RE: Regex = Regex::new(r"https://.+\.slack\.com/archives/(C[A-Z0-9]+)/p(\d{10})(\d{6})").unwrap();
+    static ref SLACK_URL_RE: Regex =
+        Regex::new(r"https://.+\.slack\.com/archives/(C[A-Z0-9]+)/p(\d{10})(\d{6})").unwrap();
 }
 
 pub async fn get_audio_data_from_voicevox(
+    client: &reqwest::Client,
     text: &str,
     speaker_style_id: &str,
     synthesize_endpoint: &str,
     audio_endpoint: &str,
 ) -> Result<Vec<u8>, Error> {
-    let client = reqwest::Client::new();
     let audio_query = client
         .post(synthesize_endpoint)
         .query(&[("text", text), ("speaker", speaker_style_id)])
@@ -128,11 +129,11 @@ pub fn extract_slack_ids(url: &str) -> Result<(String, String)> {
 }
 
 pub async fn fetch_slack_messages(
+    client: &reqwest::Client,
     token: &str,
     channel_id: &str,
     thread_ts: &str,
 ) -> Result<Value, Error> {
-    let client = reqwest::Client::new();
     let res = client
         .get("https://slack.com/api/conversations.replies")
         .header("Authorization", format!("Bearer {}", token))
