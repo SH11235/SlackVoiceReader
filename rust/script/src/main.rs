@@ -1,8 +1,6 @@
+use core::audio::{get_output_stream, get_user_device, play_audio_data, save_audio_data_to_file};
+use core::get_audio_data_from_voicevox;
 use core::slack::{extract_slack_ids, fetch_slack_messages, get_new_message};
-use core::{
-    get_audio_data_from_voicevox, get_output_stream, get_user_device, play_audio_data,
-    save_audio_data_to_file,
-};
 use cpal::traits::DeviceTrait;
 use dotenv::dotenv;
 use log::{error, info};
