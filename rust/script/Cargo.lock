@@ -55,6 +55,21 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 
 [[package]]
+name = "app_core"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "cpal",
+ "lazy_static",
+ "regex",
+ "reqwest",
+ "rodio",
+ "serde",
+ "serde_derive",
+ "serde_json",
+]
+
+[[package]]
 name = "arrayvec"
 version = "0.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -199,21 +214,6 @@ checksum = "35ed6e9d84f0b51a7f52daf1c7d71dd136fd7a3f41a8462b8cdb8c78d920fad4"
 dependencies = [
  "bytes",
  "memchr",
-]
-
-[[package]]
-name = "core"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "cpal",
- "lazy_static",
- "regex",
- "reqwest",
- "rodio",
- "serde",
- "serde_derive",
- "serde_json",
 ]
 
 [[package]]
@@ -1177,7 +1177,7 @@ name = "script"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "core",
+ "app_core",
  "cpal",
  "dotenv",
  "env_logger",

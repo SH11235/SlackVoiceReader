@@ -1,17 +1,20 @@
 use anyhow::{Error, Result};
+use cpal::Device;
 use rodio::cpal::traits::{DeviceTrait, HostTrait};
 use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
 use std::fs::File;
 use std::io::{self, Cursor, Write};
 
-pub fn get_user_device() -> Result<cpal::Device, Error> {
-    // cpalのホストを取得
+pub fn get_audio_output_devices() -> Result<Vec<Device>> {
     let host = cpal::default_host();
+    let output_devices: Vec<_> = host.output_devices()?.collect();
+    Ok(output_devices)
+}
 
-    // 利用可能な出力デバイスを表示
-    let output_devices = host.output_devices()?;
+pub fn get_user_device() -> Result<Device, Error> {
+    let mut output_devices: Vec<_> = get_audio_output_devices()?;
     println!("Available Output Devices:");
-    for (index, device) in output_devices.enumerate() {
+    for (index, device) in output_devices.iter().enumerate() {
         let device_name = device.name()?;
         println!("{}: {}", index, device_name);
     }
@@ -22,11 +25,8 @@ pub fn get_user_device() -> Result<cpal::Device, Error> {
     io::stdin().read_line(&mut input)?;
     let device_id: usize = input.trim().parse()?;
 
-    // 選択されたデバイスを取得
-    let device = host
-        .output_devices()?
-        .nth(device_id)
-        .ok_or_else(|| anyhow::anyhow!("Invalid device ID"))?;
+    // device_idで選択されたデバイスを取得
+    let device = output_devices.remove(device_id);
     println!("Selected device: {}", device.name()?);
     Ok(device)
 }
