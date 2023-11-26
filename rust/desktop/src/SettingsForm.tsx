@@ -1,21 +1,19 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect} from "react";
 
-interface Settings {
+export interface Settings {
   slackToken: string;
   threadUrl: string;
   voicevoxUrl: string;
   speakerStyleId: string;
 }
 
-function SettingsForm() {
-  const [settings, setSettings] = useState<Settings>({
-    slackToken: "",
-    threadUrl: "",
-    voicevoxUrl: "",
-    speakerStyleId: "",
-  });
+interface SettingsFormProps {
+  settings: Settings;
+  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
+}
 
+function SettingsForm({ settings, setSettings }: SettingsFormProps) {
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -48,45 +46,47 @@ function SettingsForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Slack Token:
-        <input
-          type="text"
-          name="slackToken"
-          value={settings.slackToken}
-          onChange={handleChange}
-        />
-      </label>
-      <label>
-        Thread URL:
-        <input
-          type="text"
-          name="threadUrl"
-          value={settings.threadUrl}
-          onChange={handleChange}
-        />
-      </label>
-      <label>
-        VoiceVox URL:
-        <input
-          type="text"
-          name="voicevoxUrl"
-          value={settings.voicevoxUrl}
-          onChange={handleChange}
-        />
-      </label>
-      <label>
-        Speaker Style ID:
-        <input
-          type="text"
-          name="speakerStyleId"
-          value={settings.speakerStyleId}
-          onChange={handleChange}
-        />
-      </label>
-      <input type="submit" value="Save" />
-    </form>
+    <>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Slack Token:
+          <input
+            type="text"
+            name="slackToken"
+            value={settings.slackToken}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Thread URL:
+          <input
+            type="text"
+            name="threadUrl"
+            value={settings.threadUrl}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          VoiceVox URL:
+          <input
+            type="text"
+            name="voicevoxUrl"
+            value={settings.voicevoxUrl}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Speaker Style ID:
+          <input
+            type="text"
+            name="speakerStyleId"
+            value={settings.speakerStyleId}
+            onChange={handleChange}
+          />
+        </label>
+        <input type="submit" value="Save" />
+      </form>
+    </>
   );
 }
 
