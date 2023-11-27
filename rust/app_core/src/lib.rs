@@ -4,6 +4,9 @@ pub mod slack;
 use anyhow::{Error, Result};
 use reqwest;
 
+pub const SYNTHESIZE_ENDPOINT: &str = "/audio_query";
+pub const AUDIO_ENDPOINT: &str = "/synthesis";
+
 pub async fn get_audio_data_from_voicevox(
     client: &reqwest::Client,
     text: &str,
