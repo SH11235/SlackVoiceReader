@@ -1,17 +1,10 @@
 import "./App.css";
-import SettingsForm, { Settings } from "./SettingsForm";
-import { useState } from "react";
+import SettingsForm from "./SettingsForm";
 
 function App() {
-  const [settings, setSettings] = useState<Settings>({
-    slackToken: "",
-    threadUrl: "",
-    voicevoxUrl: "",
-    speakerStyleId: "",
-  });
   return (
     <div className="App">
-      <SettingsForm settings={settings} setSettings={setSettings} />
+      <SettingsForm />
     </div>
   );
 }

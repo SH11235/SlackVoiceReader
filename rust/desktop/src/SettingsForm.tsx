@@ -1,5 +1,5 @@
 import { invoke } from "@tauri-apps/api/tauri";
-import { FormEvent, useEffect} from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 export interface Settings {
   slackToken: string;
@@ -8,12 +8,13 @@ export interface Settings {
   speakerStyleId: string;
 }
 
-interface SettingsFormProps {
-  settings: Settings;
-  setSettings: React.Dispatch<React.SetStateAction<Settings>>;
-}
-
-function SettingsForm({ settings, setSettings }: SettingsFormProps) {
+function SettingsForm() {
+  const [settings, setSettings] = useState<Settings>({
+    slackToken: "",
+    threadUrl: "",
+    voicevoxUrl: "",
+    speakerStyleId: "",
+  });
   useEffect(() => {
     const loadSettings = async () => {
       try {
