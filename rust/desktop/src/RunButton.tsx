@@ -1,9 +1,13 @@
 import { invoke } from "@tauri-apps/api/tauri";
 
-function RunButton() {
+interface RunButtonProps {
+  selectedDevice: string;
+}
+
+function RunButton({ selectedDevice }: RunButtonProps) {
   const runButtonOnClick = async () => {
     try {
-      await invoke("run_voice_reader");
+      await invoke("run_voice_reader", { device: selectedDevice });
     } catch (err) {
       console.error("Failed to run:", err);
     }
