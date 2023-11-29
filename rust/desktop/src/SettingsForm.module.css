@@ -3,8 +3,14 @@
     flex-direction: column;
 }
 
+.labelText {
+    font-weight: bold;
+    color: #333;
+}
+
 .inputField {
     margin: 10px 0;
+    max-width: 700px;
     width: 100%;
     padding: 12px 20px;
     display: inline-block;

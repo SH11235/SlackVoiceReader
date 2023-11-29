@@ -49,8 +49,9 @@ function SettingsForm() {
 
   return (
     <form onSubmit={handleSubmit} className={styles.settingsForm}>
-      <label>
+      <label className={styles.labelText}>
         Slack Token:
+        <br />
         <input
           type="text"
           name="slackToken"
@@ -59,8 +60,9 @@ function SettingsForm() {
           className={styles.inputField}
         />
       </label>
-      <label>
+      <label className={styles.labelText}>
         Thread URL:
+        <br />
         <input
           type="text"
           name="threadUrl"
@@ -69,8 +71,9 @@ function SettingsForm() {
           className={styles.inputField}
         />
       </label>
-      <label>
+      <label className={styles.labelText}>
         VoiceVox URL:
+        <br />
         <input
           type="text"
           name="voicevoxUrl"
@@ -79,8 +82,9 @@ function SettingsForm() {
           className={styles.inputField}
         />
       </label>
-      <label>
+      <label className={styles.labelText}>
         Speaker Style ID:
+        <br />
         <input
           type="text"
           name="speakerStyleId"
