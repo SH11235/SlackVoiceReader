@@ -48,7 +48,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                             #[cfg(debug_assertions)]
                             save_audio_data_to_file(&audio_data, "output.wav").await?;
 
-                            play_audio_data(&stream_handle, &audio_data).await?;
+                            play_audio_data(Some(&stream_handle), &device.name()?, &audio_data).await?;
                         }
                         Err(e) => {
                             error!("Failed to get audio data: {}", e);

@@ -1,7 +1,7 @@
 use anyhow::{Error, Result};
 use cpal::Device;
 use rodio::cpal::traits::{DeviceTrait, HostTrait};
-use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink};
+use rodio::{Decoder, OutputStream, OutputStreamHandle, Sink, Source};
 use std::fs::File;
 use std::io::{self, Cursor, Write};
 
@@ -41,14 +41,25 @@ pub async fn save_audio_data_to_file(
 }
 
 pub async fn play_audio_data(
-    stream_handle: &OutputStreamHandle,
+    stream_handle: Option<&OutputStreamHandle>,
+    device_name: &str,
     audio_data: &[u8],
 ) -> Result<(), Error> {
-    let sink = Sink::try_new(stream_handle)?;
     let cursor = Cursor::new(audio_data.to_vec());
-    let source = Decoder::new(cursor)?;
-    sink.append(source);
-    sink.sleep_until_end();
+    let source = Decoder::new(cursor)?.convert_samples::<f32>();
+    match stream_handle {
+        Some(stream_handle) => {
+            let sink = Sink::try_new(stream_handle)?;
+            sink.append(source);
+            sink.sleep_until_end();
+        }
+        None => {
+            let (_stream, stream_handle) = get_output_stream(device_name)?;
+            let sink = Sink::try_new(&stream_handle)?;
+            sink.append(source);
+            sink.sleep_until_end();
+        }
+    }
     Ok(())
 }
 
