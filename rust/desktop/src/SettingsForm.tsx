@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { FormEvent, useEffect, useState } from "react";
+import styles from "./SettingsForm.module.css";
 
 export interface Settings {
   slackToken: string;
@@ -47,47 +48,49 @@ function SettingsForm() {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <label>
-          Slack Token:
-          <input
-            type="text"
-            name="slackToken"
-            value={settings.slackToken}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          Thread URL:
-          <input
-            type="text"
-            name="threadUrl"
-            value={settings.threadUrl}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          VoiceVox URL:
-          <input
-            type="text"
-            name="voicevoxUrl"
-            value={settings.voicevoxUrl}
-            onChange={handleChange}
-          />
-        </label>
-        <label>
-          Speaker Style ID:
-          <input
-            type="text"
-            name="speakerStyleId"
-            value={settings.speakerStyleId}
-            onChange={handleChange}
-          />
-        </label>
-        <input type="submit" value="Save" />
-      </form>
-    </>
+    <form onSubmit={handleSubmit} className={styles.settingsForm}>
+      <label>
+        Slack Token:
+        <input
+          type="text"
+          name="slackToken"
+          value={settings.slackToken}
+          onChange={handleChange}
+          className={styles.inputField}
+        />
+      </label>
+      <label>
+        Thread URL:
+        <input
+          type="text"
+          name="threadUrl"
+          value={settings.threadUrl}
+          onChange={handleChange}
+          className={styles.inputField}
+        />
+      </label>
+      <label>
+        VoiceVox URL:
+        <input
+          type="text"
+          name="voicevoxUrl"
+          value={settings.voicevoxUrl}
+          onChange={handleChange}
+          className={styles.inputField}
+        />
+      </label>
+      <label>
+        Speaker Style ID:
+        <input
+          type="text"
+          name="speakerStyleId"
+          value={settings.speakerStyleId}
+          onChange={handleChange}
+          className={styles.inputField}
+        />
+      </label>
+      <input type="submit" value="Save" className={styles.submitButton} />
+    </form>
   );
 }
 

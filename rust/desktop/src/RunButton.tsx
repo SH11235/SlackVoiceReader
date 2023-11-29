@@ -1,4 +1,5 @@
 import { invoke } from "@tauri-apps/api/tauri";
+import styles from "./RunButton.module.css";
 
 interface RunButtonProps {
   selectedDevice: string;
@@ -22,8 +23,12 @@ function RunButton({ selectedDevice }: RunButtonProps) {
   };
   return (
     <>
-      <button onClick={runButtonOnClick}>Run</button>;
-      <button onClick={stopButtonOnClick}>Stop</button>;
+      <button onClick={runButtonOnClick} className={styles.runButton}>
+        Run
+      </button>
+      <button onClick={stopButtonOnClick} className={styles.stopButton}>
+        Stop
+      </button>
     </>
   );
 }

@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/tauri";
 import { useEffect, useState } from "react";
+import styles from "./DeviceList.module.css";
 
 interface DeviceListProps {
   setSelectedDevice: (deviceName: string) => void;
@@ -22,15 +23,17 @@ function DeviceList({ setSelectedDevice }: DeviceListProps) {
 
   return (
     <>
-      <ul>
+    <h2>Device List</h2>
+      <ul className={styles.deviceList}>
         {deviceList.map((deviceName) => (
-          <li key={deviceName}>
+          <li key={deviceName} className={styles.deviceItem}>
             <input
               type="radio"
               name="device"
               id={deviceName}
               value={deviceName}
               onChange={() => setSelectedDevice(deviceName)}
+              className={styles.radioInput}
             />
             <label htmlFor={deviceName}>{deviceName}</label>
           </li>
