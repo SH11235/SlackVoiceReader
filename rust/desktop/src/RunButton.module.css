@@ -1,7 +1,6 @@
 .runButton,
 .stopButton {
     background-color: #4CAF50;
-    /* Green */
     border: none;
     color: white;
     padding: 15px 32px;
@@ -15,5 +14,10 @@
 
 .stopButton {
     background-color: #f44336;
-    /* Red */
+}
+
+.runButton:disabled,
+.stopButton:disabled {
+    background-color: #888;
+    cursor: not-allowed;
 }
