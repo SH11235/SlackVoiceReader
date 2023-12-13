@@ -32,3 +32,8 @@
     max-width: 150px;
     width: 100%;
 }
+
+.submitButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}

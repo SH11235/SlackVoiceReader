@@ -16,6 +16,8 @@ function SettingsForm() {
     voicevoxUrl: "",
     speakerStyleId: "",
   });
+  const [isFormChanged, setFormChanged] = useState(false);
+
   useEffect(() => {
     const loadSettings = async () => {
       try {
@@ -27,6 +29,7 @@ function SettingsForm() {
           voicevoxUrl: settings.voicevoxUrl || "",
           speakerStyleId: settings.speakerStyleId || "",
         });
+        setFormChanged(false);
       } catch (err) {
         console.error("Failed to load settings:", err);
       }
@@ -38,9 +41,11 @@ function SettingsForm() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     invoke("save_settings", { settings });
+    setFormChanged(false);
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFormChanged(true);
     setSettings({
       ...settings,
       [event.target.name]: event.target.value,
@@ -93,7 +98,12 @@ function SettingsForm() {
           className={styles.inputField}
         />
       </label>
-      <input type="submit" value="Save" className={styles.submitButton} />
+      <input
+        type="submit"
+        value="Save"
+        disabled={!isFormChanged}
+        className={styles.submitButton}
+      />
     </form>
   );
 }

@@ -13,7 +13,7 @@ use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::sync::Mutex;
 use std::{thread, time::Duration};
-use tauri::{command, Event, State};
+use tauri::{command, State};
 
 struct AppState {
     is_running: Mutex<bool>,
