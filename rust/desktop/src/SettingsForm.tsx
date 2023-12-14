@@ -2,7 +2,7 @@ import { invoke } from "@tauri-apps/api/tauri";
 import { FormEvent, useEffect, useState } from "react";
 import styles from "./SettingsForm.module.css";
 
-export interface Settings {
+interface Settings {
   slackToken: string;
   threadUrl: string;
   voicevoxUrl: string;
