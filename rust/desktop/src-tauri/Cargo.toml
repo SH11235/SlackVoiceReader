@@ -1,10 +1,10 @@
 [package]
 name = "desktop"
-version = "0.0.0"
+version = "0.0.1"
 description = "Slack APIとVoiceVoxを使った読み上げアプリ"
 authors = ["SH11235"]
 license = ""
-repository = ""
+repository = "https://github.com/SH11235/SlackVoiceReader"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
