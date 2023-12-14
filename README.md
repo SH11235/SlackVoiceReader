@@ -88,3 +88,9 @@ Python のスクリプトは python 以下に、Rust のスクリプトは rust 
 
   以後、新規メッセージがあるたびに読み上げる。
 
+## デスクトップ版
+
+https://github.com/SH11235/SlackVoiceReader/releases にてインストーラがある。
+![image](https://github.com/SH11235/SlackVoiceReader/assets/40833633/0a39c432-c0a3-4e0c-b0de-9ac3f5631ab8)
+
+
