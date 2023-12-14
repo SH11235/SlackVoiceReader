@@ -88,7 +88,7 @@ function SettingsForm() {
         />
       </label>
       <label className={styles.labelText}>
-        Speaker Style ID:
+        Speaker Style ID: VoiceVoxの<a href="http://localhost:50021/speakers" target="_blank">http://localhost:50021/speakers</a>参照
         <br />
         <input
           type="text"
