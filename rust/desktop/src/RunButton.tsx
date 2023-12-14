@@ -28,10 +28,18 @@ function RunButton({ selectedDevice }: RunButtonProps) {
   };
   return (
     <>
-      <button onClick={runButtonOnClick} className={styles.runButton} disabled={isRunning}>
+      <button
+        onClick={runButtonOnClick}
+        className={styles.runButton}
+        disabled={isRunning || !selectedDevice}
+      >
         Run
       </button>
-      <button onClick={stopButtonOnClick} className={styles.stopButton} disabled={!isRunning}>
+      <button
+        onClick={stopButtonOnClick}
+        className={styles.stopButton}
+        disabled={!isRunning}
+      >
         Stop
       </button>
     </>
