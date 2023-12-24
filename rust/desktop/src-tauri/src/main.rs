@@ -5,6 +5,7 @@ mod error;
 use anyhow::Result;
 use app_core::audio::{get_audio_output_devices, play_audio_data};
 use app_core::slack::{extract_slack_ids, fetch_slack_messages, get_new_message};
+use app_core::text_processor::replace_url_with_text;
 use app_core::{get_audio_data_from_voicevox, AUDIO_ENDPOINT, SYNTHESIZE_ENDPOINT};
 use cpal::traits::DeviceTrait;
 use error::AppError;
@@ -72,6 +73,7 @@ async fn run_voice_reader(device: String, state: State<'_, AppState>) -> Result<
                 if let Some((ts, text)) = get_new_message(&messages, &latest_timestamp) {
                     latest_timestamp = ts;
                     println!("New message: {}", text);
+                    let text = replace_url_with_text(&text);
                     match get_audio_data_from_voicevox(
                         &client,
                         &text,

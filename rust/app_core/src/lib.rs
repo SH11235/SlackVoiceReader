@@ -1,5 +1,6 @@
 pub mod audio;
 pub mod slack;
+pub mod text_processor;
 
 use anyhow::{Error, Result};
 use reqwest;
